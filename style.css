@@ -1,20 +1,45 @@
 body {
+    font-family: Arial, sans-serif;
+    text-align: center;
     margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #000;
+    padding: 0;
+    background: #0d0d0d;
     color: #fff;
   }
   
-  .neon-container {
-    position: relative;
+  .upload-container {
+    margin-top: 50px;
   }
   
   canvas {
-    display: block;
-    background: transparent;
+    margin-top: 20px;
+    border: 2px solid #fff;
+    box-shadow: 0 0 20px cyan;
+    animation: neonGlow 1.5s infinite alternate;
+  }
+  
+  button {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #333;
     border: none;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #444;
+  }
+  
+  /* Анимация для свечения */
+  @keyframes neonGlow {
+    0% {
+      box-shadow: 0 0 10px cyan, 0 0 20px magenta, 0 0 30px cyan;
+    }
+    50% {
+      box-shadow: 0 0 15px magenta, 0 0 25px cyan, 0 0 40px magenta;
+    }
+    100% {
+      box-shadow: 0 0 10px cyan, 0 0 20px magenta, 0 0 30px cyan;
+    }
   }

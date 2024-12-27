@@ -1,34 +1,55 @@
-const canvas = document.getElementById("neonCanvas");
-const ctx = canvas.getContext("2d");
+const upload = document.getElementById('upload');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
 
-let angle = 0;
+upload.addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const img = new Image();
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      applyNeonEffect();
+    };
+    img.src = URL.createObjectURL(file);
+  }
+});
 
-// Загружаем изображение
-const img = new Image();
-img.src = "your-image.png"; // Убедитесь, что файл изображения находится в вашей папке и правильно назван.
+function applyNeonEffect() {
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imageData.data;
 
-// Анимация
-img.onload = () => {
-  const drawFrame = () => {
-    // Очищаем холст
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < data.length; i += 4) {
+    const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
 
-    // Поворачиваем и добавляем эффект свечения
-    ctx.save();
-    ctx.translate(canvas.width / 2, canvas.height / 2);
-    ctx.rotate((angle * Math.PI) / 180);
-    ctx.drawImage(img, -img.width / 2, -img.height / 2);
+    // Убираем фон, оставляем только яркие области
+    if (avg > 100) {
+      data[i] = 0;      // Красный
+      data[i + 1] = 255; // Зеленый
+      data[i + 2] = 255; // Синий
+    } else {
+      data[i] = 0;
+      data[i + 1] = 0;
+      data[i + 2] = 0;
+      data[i + 3] = 0; // Прозрачность
+    }
+  }
 
-    // Эффект свечения
-    ctx.shadowBlur = 20;
-    ctx.shadowColor = "rgba(255, 0, 255, 0.8)";
-    ctx.drawImage(img, -img.width / 2, -img.height / 2);
+  ctx.putImageData(imageData, 0, 0);
 
-    ctx.restore();
+  // Добавление анимации через CSS
+  canvas.style.filter = "drop-shadow(0 0 20px cyan)";
+  setInterval(() => {
+    canvas.style.filter = canvas.style.filter === "drop-shadow(0 0 20px cyan)"
+      ? "drop-shadow(0 0 20px magenta)"
+      : "drop-shadow(0 0 20px cyan)";
+  }, 500);
+}
 
-    angle += 0.5; // Скорость вращения
-    requestAnimationFrame(drawFrame);
-  };
-
-  drawFrame();
-};
+// Скачивание изображения
+document.getElementById('download').addEventListener('click', () => {
+  const link = document.createElement('a');
+  link.download = 'neon-effect.png';
+  link.href = canvas.toDataURL();
+  link.click();
+});
